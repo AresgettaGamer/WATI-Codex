@@ -60,3 +60,12 @@ The command does not require cheats.
 - Generic category icons are used when no compatible original icon is available; WATI Codex does not copy third-party textures.
 
 See `CHANGELOG.md` and `NOTICE.md` for release history and third-party scope.
+
+## Official links
+
+- [WATI Core](https://github.com/AresgettaGamer/WATI-Core)
+- [WATI Core on CurseForge](https://www.curseforge.com/minecraft-bedrock/addons/wati-core)
+- [Community Discord](https://discord.gg/U8WUnGCA97)
+- [WATI Catalog Builder](https://aresgettagamer.github.io/WATI-Catalog-Builder/)
+
+WATI Codex requires WATI Core v2.0.0 or newer.
