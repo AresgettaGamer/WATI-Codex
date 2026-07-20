@@ -1,1 +1,39 @@
-
+{
+  "format_version": "1.21.130",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "wati_codex:codex_recipe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "PCP",
+      "PBP",
+      "PPP"
+    ],
+    "key": {
+      "P": {
+        "item": "minecraft:paper"
+      },
+      "C": {
+        "item": "minecraft:compass"
+      },
+      "B": {
+        "item": "minecraft:book"
+      }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:book"
+      },
+      {
+        "item": "minecraft:compass"
+      }
+    ],
+    "result": {
+      "item": "wati_codex:codex",
+      "count": 1
+    }
+  }
+}
