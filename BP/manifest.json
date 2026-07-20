@@ -1,0 +1,72 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "authors": [
+      "AresgettaYT"
+    ],
+    "product_type": "addon"
+  },
+  "header": {
+    "name": "WATI Codex BP",
+    "description": "Enciclopedia de recetas, usos, procedencia y obtención impulsada por WATI Core.",
+    "min_engine_version": [
+      1,
+      21,
+      130
+    ],
+    "uuid": "964a4ce2-02d3-4f63-884d-258d0f63b59b",
+    "version": [
+      1,
+      0,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "46e2d155-82d0-4980-a754-6b77cc6f5137",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "entry": "scripts/main.js",
+      "uuid": "1d90c382-cf4d-431e-8bcd-ce45f840b2da",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "55bc6837-a95c-4612-8884-177971316478",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "uuid": "fd4723b8-a9f9-4433-86f3-1ce65c33a9d1",
+      "version": [
+        2,
+        0,
+        0
+      ]
+    },
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.8.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.1.0"
+    }
+  ]
+}
