@@ -1,6 +1,6 @@
 import { system } from "@minecraft/server";
 
-const PROTOCOL_VERSION = 2;
+const PROTOCOL_VERSION = 3;
 const DEFAULT_TIMEOUT_TICKS = 100;
 
 export function createCodexClient(consumerId = "wati_codex") {
@@ -8,9 +8,20 @@ export function createCodexClient(consumerId = "wati_codex") {
 
   const pending = new Map();
   const entryCache = new Map();
+  const sourceCache = new Map();
+  const knowledgeCache = new Map();
   let sequence = 0;
   let capabilitiesCache;
+  let schemaCache;
   let coreVersion;
+
+  function clearCaches() {
+    entryCache.clear();
+    sourceCache.clear();
+    knowledgeCache.clear();
+    capabilitiesCache = undefined;
+    schemaCache = undefined;
+  }
 
   function request(eventId, resultId, payload = {}, timeoutTicks = DEFAULT_TIMEOUT_TICKS) {
     const requestId = `c${(++sequence).toString(36)}`;
@@ -39,11 +50,11 @@ export function createCodexClient(consumerId = "wati_codex") {
     if (event.id === "wati:ready") {
       try {
         const message = JSON.parse(event.message);
-        if (message?.cv !== PROTOCOL_VERSION) return;
-        if (coreVersion !== undefined && coreVersion !== message.p) {
-          entryCache.clear();
-          capabilitiesCache = undefined;
-        }
+        const supported = Array.isArray(message?.cvs)
+          ? message.cvs.includes(PROTOCOL_VERSION)
+          : message?.cvc === PROTOCOL_VERSION || message?.cv === PROTOCOL_VERSION;
+        if (!supported) return;
+        if (coreVersion !== undefined && coreVersion !== message.p) clearCaches();
         coreVersion = message.p;
       } catch {
         // Ignore invalid announcements.
@@ -71,6 +82,13 @@ export function createCodexClient(consumerId = "wati_codex") {
     return capabilitiesCache;
   }
 
+  async function schema(force = false) {
+    if (!force && schemaCache) return schemaCache;
+    schemaCache = await request("wati:schema", "wati:schema_result");
+    coreVersion = schemaCache.pack;
+    return schemaCache;
+  }
+
   async function sources(options = {}) {
     return request("wati:sources", "wati:sources_result", {
       q: options.query || "",
@@ -80,6 +98,16 @@ export function createCodexClient(consumerId = "wati_codex") {
     });
   }
 
+  async function source(sourceId, force = false) {
+    if (typeof sourceId !== "string" || !sourceId) throw new TypeError("Invalid WATI source id.");
+    if (!force && sourceCache.has(sourceId)) return sourceCache.get(sourceId);
+    const result = await sources({ query: sourceId, page: 0, pageSize: 25, installedOnly: false });
+    const exact = (result.items || []).find(row => row.id === sourceId);
+    if (!exact) throw new Error("WATI_SOURCE_NOT_FOUND");
+    sourceCache.set(sourceId, exact);
+    return exact;
+  }
+
   async function search(options = {}) {
     const payload = {
       q: options.query || "",
@@ -87,7 +115,7 @@ export function createCodexClient(consumerId = "wati_codex") {
       z: options.pageSize ?? 10,
       x: options.installedOnly === true
     };
-    if (["item", "block", "entity"].includes(options.kind)) payload.k = options.kind;
+    if (["content", "item", "block", "entity", "biome", "ecosystem", "structure"].includes(options.kind)) payload.k = options.kind;
     return request("wati:search", "wati:search_result", payload);
   }
 
@@ -99,30 +127,48 @@ export function createCodexClient(consumerId = "wati_codex") {
     return result;
   }
 
-  async function recipes(typeId, page = 0, pageSize = 3) {
-    return request("wati:recipes", "wati:recipes_result", { i: typeId, p: page, z: pageSize });
+  async function recipes(typeId, page = 0, pageSize = 3, installedOnly = true) {
+    return request("wati:recipes", "wati:recipes_result", { i: typeId, p: page, z: pageSize, x: installedOnly === true });
   }
 
-  async function uses(typeId, page = 0, pageSize = 3) {
-    return request("wati:uses", "wati:uses_result", { i: typeId, p: page, z: pageSize });
+  async function uses(typeId, page = 0, pageSize = 3, installedOnly = true) {
+    return request("wati:uses", "wati:uses_result", { i: typeId, p: page, z: pageSize, x: installedOnly === true });
   }
 
   async function acquisition(typeId) {
     return request("wati:acquisition", "wati:acquisition_result", { i: typeId });
   }
 
+  async function knowledge(kind, typeId, force = false) {
+    const key = `${kind}\u0000${typeId}`;
+    if (!force && knowledgeCache.has(key)) return knowledgeCache.get(key);
+    const result = await request("wati:knowledge", "wati:knowledge_result", { k: kind, i: typeId });
+    knowledgeCache.set(key, result);
+    return result;
+  }
+
+  async function diagnostics(section = "summary", page = 0, pageSize = 10) {
+    return request("wati:diagnostics", "wati:diagnostics_result", {
+      s: section,
+      p: page,
+      z: pageSize
+    }, 160);
+  }
+
   return Object.freeze({
+    protocolVersion: PROTOCOL_VERSION,
     capabilities,
+    schema,
     sources,
+    source,
     search,
     entry,
     recipes,
     uses,
     acquisition,
-    clearCache() {
-      entryCache.clear();
-      capabilitiesCache = undefined;
-    },
+    knowledge,
+    diagnostics,
+    clearCache: clearCaches,
     isReady: () => coreVersion !== undefined
   });
 }

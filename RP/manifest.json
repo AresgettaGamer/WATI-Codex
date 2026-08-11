@@ -7,8 +7,8 @@
     "product_type": "addon"
   },
   "header": {
-    "name": "WATI Codex RP",
-    "description": "Iconos, texturas y traducciones para la Enciclopedia WATI.",
+    "name": "WATI Codex RP — v2.0.0",
+    "description": "Iconos, texturas y traducciones para WATI Codex v2.0.0.",
     "min_engine_version": [
       1,
       21,
@@ -16,7 +16,7 @@
     ],
     "uuid": "55bc6837-a95c-4612-8884-177971316478",
     "version": [
-      1,
+      2,
       0,
       0
     ]
@@ -26,7 +26,7 @@
       "type": "resources",
       "uuid": "98ba7529-8bed-46b3-b10b-ed6fbb154295",
       "version": [
-        1,
+        2,
         0,
         0
       ]
@@ -34,15 +34,5 @@
   ],
   "capabilities": [
     "pbr"
-  ],
-  "dependencies": [
-    {
-      "uuid": "964a4ce2-02d3-4f63-884d-258d0f63b59b",
-      "version": [
-        1,
-        0,
-        0
-      ]
-    }
   ]
 }

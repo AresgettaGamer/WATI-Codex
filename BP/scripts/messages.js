@@ -35,7 +35,9 @@ export function entryName(entry) {
 
 export function sourceName(entry) {
   if (typeof entry?.sk === "string") return translate(entry.sk);
-  return text(entry?.a || entry?.sourceName || entry?.sourceId || "Unknown Add-on");
+  if (typeof entry?.sourceKey === "string") return translate(entry.sourceKey);
+  if (typeof entry?.key === "string") return translate(entry.key);
+  return text(entry?.a || entry?.sourceName || entry?.name || entry?.sourceId || entry?.id || "Unknown Add-on");
 }
 
 export function sourceListName(source) {
