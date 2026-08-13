@@ -44,5 +44,5 @@ initializeDiscoveryTracking();
 initializeExplorationTracking();
 
 system.run(() => {
-  console.info("[WATI Codex] v2.0.0 activa: conocimiento enriquecido, botín progresivo, hábitats y exploración optimizada.");
+  console.info("[WATI Codex] v2.1.0 activa: conocimiento enriquecido, botín progresivo, hábitats y exploración optimizada.");
 });

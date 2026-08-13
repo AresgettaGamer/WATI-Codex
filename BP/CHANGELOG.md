@@ -1,3 +1,16 @@
+# WATI Codex v2.1.0
+
+- Actualiza dependencia a WATI Core v3.2.0.
+- Presenta los `facts` de Knowledge Schema 2 en la ficha de conocimiento cuando Core los entrega.
+- Muestra datos exactos de armadura, herramientas, armas y comida: protección, ranura, material, tier, nivel, daño, durabilidad, nutrición y saturación.
+- Mantiene perfiles, descubrimientos, ubicaciones, exploración y Registro de Aventura compatibles.
+
+## WATI Codex v2.0.1 — Compatibilidad interna
+
+- Actualiza dependencia a WATI Core v3.1.0.
+- Compatible con Knowledge Schema 2; los campos nuevos son aditivos y la UI v2.0.x ignora facts que aún no presenta.
+- Sin cambios funcionales en exploración, perfiles o UI.
+
 # WATI Codex — Historial de cambios
 
 ## Release v2.0.0 — Codex de conocimiento, aventura y exploración

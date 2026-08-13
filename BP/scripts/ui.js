@@ -18,7 +18,7 @@ import { orientToBiomeEntry, showOrientationMenu } from "./orientation.js";
 import { vanillaSpanishAliases } from "./vanilla_es_mx_search.js";
 
 const CODEX_ITEM = "wati_codex:codex";
-const CODEX_VERSION = "2.0.0";
+const CODEX_VERSION = "2.1.0";
 const PAGE_SIZE = 10;
 const SOURCE_PAGE_SIZE = 10;
 const RECIPE_PAGE_SIZE = 3;
@@ -985,6 +985,46 @@ function knowledgeQuantity(value) {
   return translate("ui.wati_codex.knowledge_quantity_range", [String(min), String(max)]);
 }
 
+function knowledgeFactValue(value) {
+  if (typeof value === "boolean") return translate(value ? "ui.wati_codex.yes" : "ui.wati_codex.no");
+  if (typeof value === "number") return text(String(value));
+  if (typeof value === "string" && value.includes(":")) return text(titleCase(value.split(":").at(-1)));
+  return text(titleCase(String(value)));
+}
+
+function pushKnowledgeFact(rows, labelKey, value) {
+  if (value === undefined || value === null || value === "") return;
+  rows.push([labelKey, value]);
+}
+
+function appendKnowledgeFacts(parts, facts) {
+  if (!facts || typeof facts !== "object") return;
+  const rows = [];
+  const equipment = facts.equipment || {};
+  const tool = facts.tool || {};
+  const food = facts.food || {};
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.slot", equipment.slot);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.material", equipment.material || tool.material);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.armor", equipment.armorPoints);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.kind", tool.kind);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.tier", tool.tier);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.harvest_tier", tool.harvestTier);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.level", tool.level);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.damage", tool.attackDamage);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.speed", tool.speed);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.enchantability", tool.enchantability);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.durability", equipment.durability || tool.durability);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.nutrition", food.nutrition);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.saturation", food.saturationModifier);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.always_eat", food.canAlwaysEat);
+  pushKnowledgeFact(rows, "ui.wati_codex.knowledge_fact.converts_to", food.usingConvertsTo);
+  if (!rows.length) return;
+  parts.push("\n\n§l", translate("ui.wati_codex.knowledge_facts"), "§r\n");
+  for (const [labelKey, value] of rows.slice(0, 12)) {
+    parts.push("§3• §7", translate(labelKey), ": §f", knowledgeFactValue(value), "\n");
+  }
+}
+
 function conceptName(typeId) {
   const concepts = new Map([
     ["minecraft:equipment", "equipment"],
@@ -1083,6 +1123,8 @@ async function showKnowledgePage(player, capabilities, entry, back) {
     parts.push("\n\n§l", translate("ui.wati_codex.knowledge_uses"), "§r\n§7");
     profile.roles.slice(0, 10).forEach((role, index) => parts.push(index ? " · " : "", knowledgeRole(role)));
   }
+
+  appendKnowledgeFacts(parts, profile.facts);
 
   let hiddenDrops = 0;
   if (Array.isArray(profile.drops) && profile.drops.length) {
